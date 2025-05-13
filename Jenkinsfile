@@ -1,14 +1,15 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven3'  // correspond au nom que tu as donné dans l'interface Jenkins
+    environment {
+        SONARQUBE = 'SonarQubeServer' // Nom du serveur SonarQube configuré dans Jenkins (Manage Jenkins > Configure System)
+        DOCKER_IMAGE = 'springboot-app' // Nom de l’image Docker
     }
 
     stages {
-        stage('Checkout') {
+        stage('Cloner le projet GitHub') {
             steps {
-                git 'https://github.com/penli911gt/ProjDS2.git'
+                git branch: 'main', url: 'https://github.com/votre-utilisateur/votre-repository.git'
             }
         }
 
@@ -20,16 +21,35 @@ pipeline {
 
         stage('Analyse SonarQube') {
             steps {
-                withSonarQubeEnv('sonar-token') { // à adapter selon ton config
-                    sh 'mvn sonar:sonar'
+                withSonarQubeEnv("${SONARQUBE}") {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=springboot-project -Dsonar.host.url=http://localhost:9000'
                 }
             }
         }
 
-        stage('Docker Build') {
+        stage('Attente du Quality Gate') {
             steps {
-                sh 'docker build -t springboot-app .'
+                timeout(time: 1, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    sh "docker build -t ${DOCKER_IMAGE} ."
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Pipeline terminé avec succès."
+        }
+        failure {
+            echo "❌ Pipeline échoué."
         }
     }
 }
