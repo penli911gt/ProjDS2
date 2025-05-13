@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/your-repo/spring-boot-app.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'  // Change package to install
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-token') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+        stage('Docker Build') {  // ADD this stage
+            steps {
+                sh 'docker build -t springboot-app .'
+            }
+        }
+    }
+}
