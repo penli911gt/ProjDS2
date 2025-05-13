@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Cloner le projet GitHub') {
             steps {
-                git branch: 'main', url: 'https://github.com/votre-utilisateur/votre-repository.git'
+                git branch: 'main', url: 'https://github.com/penli911gt/ProjDS2.git'
             }
         }
 
