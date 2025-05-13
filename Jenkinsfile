@@ -1,24 +1,32 @@
 pipeline {
     agent any
+
+    tools {
+        maven 'Maven3'  // correspond au nom que tu as donné dans l'interface Jenkins
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/penli911gt/ProjDS2.git'
+                git 'https://github.com/penli911gt/ProjDS2.git'
             }
         }
-        stage('Build') {
+
+        stage('Build Maven') {
             steps {
-                sh 'mvn clean install'  // Change package to install
+                sh 'mvn clean install'
             }
         }
-        stage('SonarQube Analysis') {
+
+        stage('Analyse SonarQube') {
             steps {
-                withSonarQubeEnv('sonar-token') {
+                withSonarQubeEnv('sonar-token') { // à adapter selon ton config
                     sh 'mvn sonar:sonar'
                 }
             }
         }
-        stage('Docker Build') {  // ADD this stage
+
+        stage('Docker Build') {
             steps {
                 sh 'docker build -t springboot-app .'
             }
