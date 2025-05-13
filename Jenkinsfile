@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE = 'SonarQubeServer' // Nom du serveur SonarQube configuré dans Jenkins (Manage Jenkins > Configure System)
-        DOCKER_IMAGE = 'springboot-app' // Nom de l’image Docker
+        SONARQUBE = 'SonarQubeServer' // Nom défini dans Jenkins > Manage Jenkins > Configure SonarQube
+        IMAGE_NAME = 'springboot-app' // Nom Docker que tu veux
     }
 
     stages {
@@ -37,9 +37,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh "docker build -t ${DOCKER_IMAGE} ."
-                }
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
     }
@@ -49,7 +47,7 @@ pipeline {
             echo "✅ Pipeline terminé avec succès."
         }
         failure {
-            echo "❌ Pipeline échoué."
+            echo "❌ Le pipeline a échoué."
         }
     }
 }
