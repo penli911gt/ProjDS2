@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE = 'SonarQubeServer' // SonarQube name in Jenkins
+        SONARQUBE = 'sonarqube' // SonarQube name in Jenkins settings
         IMAGE_NAME = 'springboot-app' // Docker image name
     }
 
@@ -30,6 +30,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t ${IMAGE_NAME} ."
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                sh "docker run -d -p 8082:8080 ${IMAGE_NAME}"
             }
         }
     }
